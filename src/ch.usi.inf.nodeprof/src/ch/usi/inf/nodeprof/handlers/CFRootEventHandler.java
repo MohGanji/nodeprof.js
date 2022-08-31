@@ -33,4 +33,8 @@ public abstract class CFRootEventHandler extends BaseSingleTagEventHandler {
     public boolean isAsyncRoot() {
         return this.type.equals(JSTags.ControlFlowRootTag.Type.AsyncFunction.name());
     }
+
+    public boolean isTryCatch() {
+        return this.type.equals(JSTags.ControlFlowRootTag.Type.ExceptionHandler.name());
+    }
 }

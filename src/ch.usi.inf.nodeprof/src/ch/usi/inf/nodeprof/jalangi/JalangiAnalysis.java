@@ -57,6 +57,7 @@ import ch.usi.inf.nodeprof.jalangi.factory.ConditionalFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.DeclareFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.EvalFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.EvalFunctionFactory;
+import ch.usi.inf.nodeprof.jalangi.factory.ExceptionHandlerFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.ExpressionFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.ForObjectFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.GetElementFactory;
@@ -71,6 +72,7 @@ import ch.usi.inf.nodeprof.jalangi.factory.ReadFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.ReturnFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.RootFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.StatementFactory;
+import ch.usi.inf.nodeprof.jalangi.factory.ThrowFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.UnaryFactory;
 import ch.usi.inf.nodeprof.jalangi.factory.WriteFactory;
 import ch.usi.inf.nodeprof.utils.GlobalConfiguration;
@@ -153,6 +155,14 @@ public class JalangiAnalysis {
             put("awaitPre", EnumSet.of(CF_BRANCH));
             put("awaitPost", EnumSet.of(CF_BRANCH));
 
+
+            put("throwPre", EnumSet.of(CF_BRANCH));
+            put("throwPost", EnumSet.of(CF_BRANCH));
+
+
+            put("tryPre", EnumSet.of(CF_ROOT));
+            put("tryPost", EnumSet.of(CF_ROOT));
+
             put("startExpression", EnumSet.of(EXPRESSION));
             put("endExpression", EnumSet.of(EXPRESSION));
             put("startStatement", EnumSet.of(STATEMENT));
@@ -167,7 +177,7 @@ public class JalangiAnalysis {
                                     "instrumentCodePre", "instrumentCode", // TODO will those be
                                                                            // supported at all?
                                     "onReady", // TODO should this be ignored instead
-                                    "runInstrumentedFunctionBody", "scriptEnter", "scriptExit", "_throw", "_with")));
+                                    "runInstrumentedFunctionBody", "scriptEnter", "scriptExit", "_with")));
 
     public static final Set<String> ignoredCallbacks = Collections.unmodifiableSet(
                     // endExecution is a high-level event handled by the jalangi.js script
@@ -263,6 +273,11 @@ public class JalangiAnalysis {
                             new ConditionalFactory(this.jsAnalysis, callbacks.get("conditional"), true));
         }
 
+        if (this.callbacks.containsKey("tryPre") || this.callbacks.containsKey("tryPost")) {
+            this.instrument.onCallback(ProfiledTagEnum.CF_ROOT, new ExceptionHandlerFactory(
+                    this.jsAnalysis, callbacks.get("tryPre"), callbacks.get("tryPost")));
+        }
+
         /*
          * functionEnter/Exit callback: instruments root nodes of functions
          */
@@ -338,6 +353,15 @@ public class JalangiAnalysis {
             this.instrument.onCallback(
                             ProfiledTagEnum.CF_BRANCH,
                             new AwaitFactory(this.jsAnalysis, callbacks.get("awaitPre"), callbacks.get("awaitPost")));
+        }
+
+        /*
+         * throw callback
+         */
+        if (this.callbacks.containsKey("throwPre") || this.callbacks.containsKey("throwPost")) {
+            this.instrument.onCallback(
+                            ProfiledTagEnum.CF_BRANCH,
+                            new ThrowFactory(this.jsAnalysis, callbacks.get("throwPre"), callbacks.get("throwPost")));
         }
 
         /*

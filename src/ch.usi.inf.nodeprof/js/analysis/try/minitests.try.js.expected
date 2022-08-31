@@ -1,0 +1,10 @@
+tryPre @ 2 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:1:1:5:2)
+tryPost @ 2 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:1:1:5:2)
+tryPre @ 5 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:8:5:12:6)
+tryPre @ 5 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:8:5:12:6)
+error caught in async function
+tryPost @ 5 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:8:5:12:6)
+tryPre @ 7 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:14:5:18:6)
+throwPre @ 8 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:15:9:15:40)
+second error caught
+tryPost @ 7 @ (src/ch.usi.inf.nodeprof.test/js/minitests/try.js:14:5:18:6)

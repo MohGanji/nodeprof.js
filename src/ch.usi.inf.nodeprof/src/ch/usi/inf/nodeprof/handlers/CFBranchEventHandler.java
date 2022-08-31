@@ -37,4 +37,8 @@ public abstract class CFBranchEventHandler extends BaseSingleTagEventHandler {
     public boolean isAwaitNode() {
         return this.type.equals(JSTags.ControlFlowBranchTag.Type.Await.name());
     }
+
+    public boolean isThrowNode() {
+        return this.type.equals(JSTags.ControlFlowBranchTag.Type.Throw.name());
+    }
 }
