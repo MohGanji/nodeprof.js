@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright 2018 Dynamic Analysis Group, Università della Svizzera Italiana (USI)
- * Copyright (c) 2019, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021, Oracle and/or its affiliates. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,13 @@ import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.RootNode;
 import com.oracle.truffle.api.object.DynamicObject;
 import com.oracle.truffle.api.source.SourceSection;
-import com.oracle.truffle.api.strings.TruffleString;
-import com.oracle.truffle.js.runtime.Strings;
 import com.oracle.truffle.js.runtime.builtins.JSFunction;
+import com.oracle.truffle.js.runtime.objects.JSLazyString;
 import com.oracle.truffle.js.runtime.objects.Undefined;
 
 import ch.usi.inf.nodeprof.utils.GlobalConfiguration;
 import ch.usi.inf.nodeprof.utils.Logger;
 import ch.usi.inf.nodeprof.utils.SourceMapping;
-
-import static com.oracle.truffle.js.runtime.Strings.REQUIRE_PROPERTY_NAME;
 
 /**
  *
@@ -133,24 +130,6 @@ public abstract class BaseEventHandlerNode extends Node {
         executeExceptional(frame, exception);
     }
 
-    public TruffleString getAttributeTString(String key) {
-        Object result = getAttribute(key);
-        assert Strings.isTString(result);
-        return (TruffleString) result;
-    }
-
-    public String getAttributeInternalString(String key) {
-        Object result = getAttribute(key);
-        assert result instanceof String;
-        return (String) result;
-    }
-
-    public TruffleString getAttributeConvertTString(String key) {
-        Object result = getAttribute(key);
-        assert result instanceof String;
-        return Strings.fromJavaString((String) result);
-    }
-
     /**
      *
      * get the node-specific attribute, in case of missing such attributes report an error
@@ -228,13 +207,12 @@ public abstract class BaseEventHandlerNode extends Node {
         return Undefined.instance;
     }
 
-    protected TruffleString assertGetStringInput(int index, Object[] inputs, String inputHint) {
+    protected String assertGetStringInput(int index, Object[] inputs, String inputHint) {
         Object input = assertGetInput(index, inputs, inputHint);
         if (input instanceof String) {
-            Logger.warning("Input not TruffleString but String");
-            return Strings.fromJavaString((String) input);
-        } else if (input instanceof TruffleString) {
-            return (TruffleString) input;
+            return (String) input;
+        } else if (input instanceof JSLazyString) {
+            return ((JSLazyString) input).toString();
         }
         reportInputsError(1, inputs, "ExpectedStringLike", inputHint);
         return null;
@@ -308,7 +286,7 @@ public abstract class BaseEventHandlerNode extends Node {
             return false;
         }
         if (JSFunction.isJSFunction(args[3])) {
-            return REQUIRE_PROPERTY_NAME.equals(JSFunction.getName((DynamicObject) args[3]));
+            return "require".equals(JSFunction.getName((DynamicObject) args[3]));
         }
         return false;
     }

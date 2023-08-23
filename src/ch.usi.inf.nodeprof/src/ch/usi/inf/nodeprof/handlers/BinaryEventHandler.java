@@ -1,6 +1,6 @@
 /* *****************************************************************************
  * Copyright 2018 Dynamic Analysis Group, Università della Svizzera Italiana (USI)
- * Copyright (c) 2018, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package ch.usi.inf.nodeprof.handlers;
 
 import com.oracle.truffle.api.instrumentation.EventContext;
-import com.oracle.truffle.api.strings.TruffleString;
-import com.oracle.truffle.js.runtime.Strings;
 import com.oracle.truffle.js.runtime.objects.Undefined;
 
 import ch.usi.inf.nodeprof.ProfiledTagEnum;
@@ -27,20 +25,19 @@ import ch.usi.inf.nodeprof.ProfiledTagEnum;
  * Abstract event handler for binary events
  */
 public abstract class BinaryEventHandler extends BaseSingleTagEventHandler {
-    private final TruffleString op;
+    private final String op;
     private final boolean isLogic;
 
     public BinaryEventHandler(EventContext context) {
         super(context, ProfiledTagEnum.BINARY);
-        String internalOp = getAttributeInternalString("operator");
-        isLogic = internalOp.equals("||") || internalOp.equals("&&");
-        op = Strings.fromJavaString(internalOp);
+        op = (String) getAttribute("operator");
+        isLogic = op.equals("||") || op.equals("&&");
     }
 
     /**
      * @return the operator
      */
-    public Object getOp() {
+    public String getOp() {
         return this.op;
     }
 

@@ -1,6 +1,6 @@
 /* *****************************************************************************
  * Copyright 2018 Dynamic Analysis Group, Università della Svizzera Italiana (USI)
- * Copyright (c) 2018, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020, Oracle and/or its affiliates. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ public abstract class ConditionalEventHandler extends BaseSingleTagEventHandler 
 
     public ConditionalEventHandler(EventContext context) {
         super(context, ProfiledTagEnum.CF_BRANCH);
-        this.isConditional = JSTags.ControlFlowBranchTag.Type.Condition.name().equals(getAttributeOrNull("type"));
+        boolean typeIsCond = false;
+        typeIsCond = JSTags.ControlFlowBranchTag.Type.Condition.name().equals(getAttributeOrNull("type"));
+        this.isConditional = typeIsCond;
     }
 
     public boolean isConditional() {
